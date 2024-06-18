@@ -1,39 +1,34 @@
-const fs = require("fs");
-const Papa = require("papaparse");
+const { readFileSync } = require("fs");
 
-function countStudents(path) {
+function countStudents(file) {
   try {
-    const data = fs.readFileSync(path, "utf8");
-    const parsedData = Papa.parse(data, {
-      header: true,
-      skipEmptyLines: true,
-    });
-    const students = parsedData.data;
-    const numberOfStudents = students.length;
-    console.log(`Number of students: ${numberOfStudents}`);
-
-    const studSet = new Set();
-    students.forEach((student) => {
-      studSet.add(student.field);
-    });
-    const studFields = Array.from(studSet);
-
-    studFields.forEach((studField) => {
-      const studsPerField = students.filter(
-        (student) => student.field === studField
-      );
-      const studFirstName = [];
-      studsPerField.forEach((studPerField) => {
-        studFirstName.push(studPerField.firstname);
-      });
+    const data = readFileSync(file, "utf-8");
+    const dataList = data.split("\n").splice(1);
+    const stats = { CS: [], SWE: [] };
+    let students = 0;
+    for (const line of dataList) {
+      const columns = line.split(",");
+      if (columns[3] === "CS") {
+        stats.CS.push(columns[0]);
+        students += 1;
+      } else if (columns[3] === "SWE") {
+        stats.SWE.push(columns[0]);
+        students += 1;
+      }
+    }
+    console.log(`Number of students: ${students}`);
+    for (const [key, value] of Object.entries(stats)) {
       console.log(
-        `Number of students in ${studField}: ${
-          studFirstName.length
-        }. List: ${studFirstName.join(", ")}`
+        `Number of students in ${key}: ${value.length}. List: ${value.join(
+          ", "
+        )}`
       );
-    });
+    }
   } catch (err) {
-    throw new Error("Cannot load the database");
+    if (err.code === "ENOENT") {
+      throw new Error("Cannot load the database");
+    }
+    throw err;
   }
 }
 
