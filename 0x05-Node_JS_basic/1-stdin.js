@@ -1,8 +1,12 @@
-console.log('Welcome to Holberton School, what is your name?');
-process.stdin.setEncoding('utf-8');
-process.stdin.on('data', (data) => {
-  if (data) {
-    process.stdout.write(`Your name is: ${data}`);
-  }
+process.stdin.setEncoding("utf8");
+
+console.log("Welcome to Holberton School, what is your name?");
+
+process.stdin.on("data", (data) => {
+  const trimmedData = data.trim();
+  console.log(`Your name is: ${trimmedData}`);
+
+  process.stdin.on("end", () => {
+    console.log("This important software is now closing");
+  });
 });
-process.stdin.on('end', () => console.log('This important software is now closing'));
