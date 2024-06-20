@@ -1,0 +1,19 @@
+{
+    "name": "0x06-unittests_in_js",
+    "version": "1.0.0",
+    "description": "unit tests in javascript",
+    "scripts": {
+        "test": "mocha",
+        "eslint": "eslint"
+    },
+    "author": "",
+    "license": "ISC",
+    "devDependencies": {
+        "mocha": "^10.2.0"
+    },
+    "dependencies": {
+        "chai": "^4.3.7",
+        "eslint": "^8.56.0",
+        "sinon": "^15.2.0"
+    }
+}
