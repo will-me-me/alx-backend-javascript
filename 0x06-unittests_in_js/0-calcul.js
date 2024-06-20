@@ -1,9 +1,3 @@
-/* eslint-disable */
-
-const calculateNumber = (a, b) => {
-  const newA = Math.round(a);
-  const newB = Math.round(b);
-  return newA + newB;
-};
+const calculateNumber = (a, b) => Math.round(a) + Math.round(b);
 
 module.exports = calculateNumber;

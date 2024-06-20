@@ -1,17 +1,12 @@
-/* eslint-disable */
-
 const calculateNumber = (type, a, b) => {
-  const newA = Math.round(a);
-  const newB = Math.round(b);
   if (type === 'SUM') {
-    return newB + newA;
-  } if (type === 'SUBTRACT') {
-    return newA - newB;
-  } if (type === 'DIVIDE') {
-    if (newB === 0) {
-      return 'Error';
-    }
-    return newA / newB;
+    return Math.round(a) + Math.round(b);
+  }
+  if (type === 'SUBTRACT') {
+    return Math.round(a) - Math.round(b);
+  }
+  if (type === 'DIVIDE') {
+    return Math.round(b) === 0 ? 'Error' : Math.round(a) / Math.round(b);
   }
   return 0;
 };
