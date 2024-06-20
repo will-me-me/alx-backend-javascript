@@ -1,55 +1,36 @@
-const http = require('http');
-const url = require('url');
-const { readFile } = require('fs');
+const http = require("http");
 
-const printStats = (data) => {
-  const dataList = data.split('\n').splice(1);
-  const stats = { CS: [], SWE: [] };
-  let students = 0;
-  for (const line of dataList) {
-    const columns = line.split(',');
-    if (columns[3] === 'CS') {
-      stats.CS.push(columns[0]);
-      students += 1;
-    } else if (columns[3] === 'SWE') {
-      stats.SWE.push(columns[0]);
-      students += 1;
+const args = process.argv.slice(2);
+const countStudents = require("./3-read_file_async");
+
+const DATABASE = args[0];
+
+const hostname = "127.0.0.1";
+const port = 1245;
+
+const app = http.createServer(async (req, res) => {
+  res.statusCode = 200;
+  res.setHeader("Content-Type", "text/plain");
+
+  const { url } = req;
+
+  if (url === "/") {
+    res.write("Hello Holberton School!");
+  } else if (url === "/students") {
+    res.write("This is the list of our students\n");
+    try {
+      const students = await countStudents(DATABASE);
+      res.end(`${students.join("\n")}`);
+    } catch (error) {
+      res.end(error.message);
     }
   }
-  const out = [`Number of students: ${students}`];
-  for (const [key, value] of Object.entries(stats)) {
-    out.push(`Number of students in ${key}: ${value.length}. List: ${value.join(', ')}`);
-  }
-  return out;
-};
-
-const countStudents = (file) => new Promise((resolve, reject) => {
-  readFile(file, 'utf-8', (err, data) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        reject(new Error('Cannot load the database'));
-      }
-      reject(err);
-    } else {
-      resolve(printStats(data));
-    }
-  });
+  res.statusCode = 404;
+  res.end();
 });
 
-const app = http.createServer((req, res) => {
-  const reqUrl = url.parse(req.url).pathname;
-  if (reqUrl === '/') {
-    res.end('Hello Holberton School!');
-  } else if (reqUrl === '/students') {
-    res.write('This is the list of our students\n');
-    countStudents(process.argv[2]).then((data) => {
-      res.end(data.join('\n'));
-    }).catch((err) => {
-      res.end(err.message);
-    });
-  }
+app.listen(port, hostname, () => {
+  //   console.log(`Server running at http://${hostname}:${port}/`);
 });
-
-app.listen(1245, '127.0.0.1', () => console.log('Server Started'));
 
 module.exports = app;

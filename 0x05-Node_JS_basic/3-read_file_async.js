@@ -1,36 +1,32 @@
-const { readFile } = require('fs');
+const fs = require("fs");
 
-const printStats = (data) => {
-  const dataList = data.split('\n').splice(1);
-  const stats = { CS: [], SWE: [] };
-  let students = 0;
-  for (const line of dataList) {
-    const columns = line.split(',');
-    if (columns[3] === 'CS') {
-      stats.CS.push(columns[0]);
-      students += 1;
-    } else if (columns[3] === 'SWE') {
-      stats.SWE.push(columns[0]);
-      students += 1;
-    }
-  }
-  console.log(`Number of students: ${students}`);
-  for (const [key, value] of Object.entries(stats)) {
-    console.log(`Number of students in ${key}: ${value.length}. List: ${value.join(', ')}`);
-  }
-};
-
-const countStudents = (file) => new Promise((resolve, reject) => {
-  readFile(file, 'utf-8', (err, data) => {
-    if (err) {
-      if (err.code === 'ENOENT') {
-        reject(new Error('Cannot load the database'));
+function countStudents(path) {
+  const promise = (res, rej) => {
+    fs.readFile(path, (err, data) => {
+      if (err) rej(Error("Cannot load the database"));
+      if (data) {
+        let newData = data.toString().split("\n");
+        newData = newData.slice(1, newData.length - 1);
+        console.log(`Number of students: ${newData.length}`);
+        const obj = {};
+        newData.forEach((el) => {
+          const student = el.split(",");
+          if (!obj[student[3]]) obj[student[3]] = [];
+          obj[student[3]].push(student[0]);
+        });
+        for (const cls in obj) {
+          if (cls)
+            console.log(
+              `Number of students in ${cls}: ${obj[cls].length}. List: ${obj[
+                cls
+              ].join(", ")}`
+            );
+        }
       }
-      reject(err);
-    } else {
-      resolve(printStats(data));
-    }
-  });
-});
+      res();
+    });
+  };
+  return new Promise(promise);
+}
 
 module.exports = countStudents;

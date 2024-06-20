@@ -1,34 +1,26 @@
-const { readFileSync } = require("fs");
+const fs = require("fs");
 
-function countStudents(file) {
+function countStudents(path) {
   try {
-    const data = readFileSync(file, "utf-8");
-    const dataList = data.split("\n").splice(1);
-    const stats = { CS: [], SWE: [] };
-    let students = 0;
-    for (const line of dataList) {
-      const columns = line.split(",");
-      if (columns[3] === "CS") {
-        stats.CS.push(columns[0]);
-        students += 1;
-      } else if (columns[3] === "SWE") {
-        stats.SWE.push(columns[0]);
-        students += 1;
-      }
-    }
-    console.log(`Number of students: ${students}`);
-    for (const [key, value] of Object.entries(stats)) {
-      console.log(
-        `Number of students in ${key}: ${value.length}. List: ${value.join(
-          ", "
-        )}`
-      );
+    let data = fs.readFileSync(path, "utf8").toString().split("\n");
+    data = data.slice(1, data.length - 1);
+    console.log(`Number of students: ${data.length}`);
+    const obj = {};
+    data.forEach((el) => {
+      const student = el.split(",");
+      if (!obj[student[3]]) obj[student[3]] = [];
+      obj[student[3]].push(student[0]);
+    });
+    for (const cls in obj) {
+      if (cls)
+        console.log(
+          `Number of students in ${cls}: ${obj[cls].length}. List: ${obj[
+            cls
+          ].join(", ")}`
+        );
     }
   } catch (err) {
-    if (err.code === "ENOENT") {
-      throw new Error("Cannot load the database");
-    }
-    throw err;
+    throw new Error("Cannot load the database");
   }
 }
 

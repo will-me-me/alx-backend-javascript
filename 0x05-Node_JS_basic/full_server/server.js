@@ -1,10 +1,9 @@
-import router from './routes/index';
-
-const express = require('express');
+const express = require("express");
+const router = require("./routes");
 
 const app = express();
-app.use(router);
 
-app.listen(1245, () => console.log('server started!!'));
+app.use("/", router);
 
-export default app;
+app.listen(1245);
+module.exports = app;
